@@ -1,8 +1,5 @@
-      //var visitor = 'tariqwest';
-      $(document).ready(function(){
-        moment.relativeTimeThreshold('ss'); 
 
-        index = streams.home.length -1;
+      $(document).ready(function(){
 
         streams.home.offset = 0;
 
@@ -14,11 +11,10 @@
 
         // Continually run to update dates (shown in 'from now' format)
         (function(){
-          $('.tweet-date').each(function(){   
+          $('.tweet').each(function(){   
             var date = $(this).data('date');
-            console.log(typeof date);
             date = moment(date).fromNow(true);
-            $(this).text(date);
+            $(this).find('.tweet-date').text(date);
           });
           setTimeout(arguments.callee, 10000);
         })();
@@ -42,17 +38,23 @@
           updateUserTweets(user, 'user-timeline');
         }
 
+        // Filter timeline by user
+        function filterTimeline(user){
+
+          $('.tweet').addClass('hide');
+
+          $('.tweet').filter('[data-user="' + user + '"]').removeClass('hide');
+        }
+
         // Display tweets for a home or user timeline
         function displayTweets (stream, timeline){
           for(var i=0; i < stream.length; i++){
             var tweet = stream[i];
-            var $tweet = $('<div class="tweet"></div>');
+            var $tweet = $('<div class="tweet" data-user="'+tweet.user+'" data-date="'+tweet.created_at+'"></div>');
 
             var date = moment(tweet.created_at, "ddd mmm dd yyyy HH:MM:ss").fromNow(true);
 
-            //console.log(time);
-
-            $tweet.html('<div class="tweet-top"><div class="tweet-user">' + tweet.user + '<a class="user-link" href="#' + tweet.user + '">@'+ tweet.user + '</a></div><div class="tweet-date" data-date="' + tweet.created_at +'">' + date + '</div></div><div class="tweet-message">' + tweet.message + '</div>');
+            $tweet.html('<div class="tweet-top"><a class="user-link" href="#' + tweet.user + '"><div class="tweet-user">' + tweet.user + '<span>@'+ tweet.user + '</span></div></a><div class="tweet-date">' + date + '</div></div><div class="tweet-message">' + tweet.message + '</div>');
             $tweet.prependTo('#'+timeline).hide().fadeIn( 400 );
             
             if(timeline === 'my-timeline'){
@@ -66,7 +68,7 @@
         // Fetch new tweets for a selected user
         function updateUserTweets(user, timeline){
           (function(){
-            var timeout = setTimeout(arguments.callee, 500);
+            var timeout = setTimeout(arguments.callee, 1000);
             $('#back').on('click', function(){
               clearTimeout(timeout);
             });
@@ -94,19 +96,30 @@
 
         // Show tweets for a user if user's link is clicked
         $('body').on('click', '.tweet-user', function(){
-          var user = $(this).find('a').attr('href').slice(1);
+          var user = $(this).closest('.tweet').data('user');
+          $('#user-timeline-sidebar').prepend('<h1>Welcome to ' + user + ' timeline!</h1>');
+          $('#user-timeline-sidebar').show();
           $('#user-timeline').show();
           $('#my-timeline').hide();
+          $('#my-timeline-sidebar').hide();
           generateUserTimeline(user);
         });
 
         // Return to view of home
         $('#back').on('click', function(){
-          $('#user-timeline').toggle();
+          $('#user-timeline').hide();
           $('#user-timeline').find('.tweet').remove();
-          $('#my-timeline').toggle();
+          $('#user-timeline-sidebar').hide();
+          $('#user-timeline-sidebar').find('h1').remove();
+          $('#my-timeline').show();
+          $('#my-timeline-sidebar').show();
         });
 
-        //writeTweet("This is Tariq. I'm tired!");
+        // Return to view of home
+        $('#submit').on('click', function(){
+          var message = $('#enter-tweet').val();
+          writeTweet(message);
+          $('#enter-tweet').val('');
+        });
 
       });

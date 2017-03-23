@@ -9,16 +9,24 @@
     <script src="twittler.js"></script>
   </head>
   <body>
-    <div id="sidebar">...</div>
-    <div id="my-timeline">
-      <form action="">
-        <input id="enter-tweet" name="enter-tweet" type="text">
-        <button id="submit" type="button" onclick="alert('Hello World!')">tweet</button>
-      </form>      
+    <div id="sidebar">
+      <div id="sidebar-top"></div>
+      <div id="my-timeline-sidebar">
+        <h1>Welcome to your timeline!</h1>
+        <form action="">
+        <textarea id="enter-tweet" name="enter-tweet" placeholder="Let your friends know what's on your mind..."></textarea>
+        <button id="submit" type="button">tweet</button>
+        </form>  
+      </div>
+      <div id="user-timeline-sidebar" style="display:none">
+        <a id="back" href="#my-timeline">Back to my timeline</a>
+      </div>
+    </div>
+    <div id="my-timeline">    
     </div>
 
     <div id="user-timeline" style="display:none">
-      <a id="back" href="#my-timeline">Back to my timeline</a>
+      
     </div>
 
     <script>
