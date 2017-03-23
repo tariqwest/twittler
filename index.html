@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="twittler.css">
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <script src="moment.js"></script>
     <script src="twittler.js"></script>
   </head>
   <body>
-
+    <div id="sidebar">...</div>
     <div id="my-timeline">
-      
+      <form action="">
+        <input id="enter-tweet" name="enter-tweet" type="text">
+        <button id="submit" type="button" onclick="alert('Hello World!')">tweet</button>
+      </form>      
     </div>
 
     <div id="user-timeline" style="display:none">
