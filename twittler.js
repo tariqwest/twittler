@@ -4,19 +4,19 @@
         streams.home.offset = 0;
 
         // Continually run to fetch any new tweets
-        (function(){
+        (function fetchMyTimelineTweets(){
           generateMyTimeline();
-          setTimeout(arguments.callee, 1000);
+          setTimeout(fetchMyTimelineTweets, 1000);
         })();
 
         // Continually run to update dates (shown in 'from now' format)
-        (function(){
+        (function updateDates(){
           $('.tweet').each(function(){   
             var date = $(this).data('date');
             date = moment(date).fromNow(true);
             $(this).find('.tweet-date').text(date);
           });
-          setTimeout(arguments.callee, 10000);
+          setTimeout(updateDates, 10000);
         })();
 
 
@@ -38,13 +38,6 @@
           updateUserTweets(user, 'user-timeline');
         }
 
-        // Filter timeline by user
-        function filterTimeline(user){
-
-          $('.tweet').addClass('hide');
-
-          $('.tweet').filter('[data-user="' + user + '"]').removeClass('hide');
-        }
 
         // Display tweets for a home or user timeline
         function displayTweets (stream, timeline){
@@ -67,8 +60,8 @@
 
         // Fetch new tweets for a selected user
         function updateUserTweets(user, timeline){
-          (function(){
-            var timeout = setTimeout(arguments.callee, 1000);
+          (function fetchUserTimelineTweets(){
+            var timeout = setTimeout(fetchUserTimelineTweets, 1000);
             $('#back').on('click', function(){
               clearTimeout(timeout);
             });
