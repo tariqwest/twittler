@@ -10,23 +10,18 @@
   </head>
   <body>
     <div id="sidebar">
-      <div id="sidebar-top"></div>
-      <div id="my-timeline-sidebar">
-        <h1>Welcome to your timeline!</h1>
-        <form action="">
-        <textarea id="enter-tweet" name="enter-tweet" placeholder="Let your friends know what's on your mind..."></textarea>
-        <button id="submit" type="button">tweet</button>
-        </form>  
-      </div>
-      <div id="user-timeline-sidebar" style="display:none">
-        <a id="back" href="#my-timeline">Back to my timeline</a>
+      <div id="sidebar-logo"></div>
+      <div id="sidebar-content">
+        <h1>Welcome to your home timeline!</h1>
+        <a id="back-to-home" href="#timeline" style="display:none">< Back to home timeline</a>
+        <div id="create-tweet">
+          <textarea id="enter-tweet" name="enter-tweet" placeholder="Let your friends know what's on your mind..."></textarea>
+          <button id="submit-tweet" type="button">tweet</button>
+        </div>
       </div>
     </div>
-    <div id="my-timeline">    
-    </div>
-
-    <div id="user-timeline" style="display:none">
-      
+    <div id="timeline">    
+      <div id="timeline-newtweets" style="display:none">View <span id="newtweets-count"></span>+ new Tweets</div>
     </div>
 
     <script>

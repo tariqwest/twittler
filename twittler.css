@@ -4,9 +4,13 @@ body{
     font-family: 'Roboto', sans-serif;
 }
 
-a, a:hover, a:active{
+a{
+   color: #0084B4;
+   text-decoration: none;
+}
+
+a:hover, a:active{
     text-decoration: underline;
-    color: #0084B4;
 }
 
 h1{
@@ -24,7 +28,7 @@ h1{
     padding: 10px;
 }
 
-#sidebar-top{
+#sidebar-logo{
     height: 70px;
     display: block;
     background-color: #0084B4;
@@ -32,6 +36,11 @@ h1{
     background-size: 50%;
     background-repeat: no-repeat;
     background-position: 50% 50%;
+}
+
+#back-to-home{
+    padding-bottom: 10px;
+    display: block;
 }
 
 #enter-tweet{
@@ -43,7 +52,7 @@ h1{
     padding: 5px;
 }
 
-#submit{
+#submit-tweet{
     width: 100%;
     background: #fff;
     border: 1px solid #0084B4;
@@ -52,19 +61,33 @@ h1{
     margin-top: 10px;
     color: #0084B4;
     font-weight: bold;
+    cursor: pointer;
 }
 
-#submit:hover{
+#submit-tweet:hover{
     background: #0084B4;
     border: none;
     color: #fff;
 }
 
-#my-timeline, #user-timeline{
+#timeline{
     float: left;
     width: 60%;
     margin: 30px 10px 0 35px;
-    border-bottom: 1px solid #ccc;
+}
+
+#timeline-newtweets{
+    border: 1px solid #0084B4;
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #0084B4;
+    cursor: pointer;
+}
+
+#timeline-newtweets:hover{
+    background-color: #0084B4;
+    color: #fff;
 }
 
 .tweet{

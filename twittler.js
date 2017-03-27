@@ -1,97 +1,112 @@
 
       $(document).ready(function(){
 
+        // Keep track of how many tweets we've already displayed
         streams.home.offset = 0;
 
-        // Continually run to fetch any new tweets for my home timeline
-        (function fetchMyTimelineTweets(){
-          generateMyTimeline();
-          setTimeout(fetchMyTimelineTweets, 1000);
+        // Display tweets on first page load
+        displayTweets();
+
+        // Continually run to update count of new, not displayed, tweets
+        (function updateTweetCount(){
+          if(streams.home.offset > 0){
+            var newTweetsCount = 0;
+            if(location.hash && location.hash.substr(1) !== 'timeline'){
+              var user = location.hash.substr(1);
+              newTweetsCount = streams.users[user].length - 
+                $('.tweet').filter('[data-user="' + user + '"]').length;
+            }else{
+              newTweetsCount = streams.home.length - streams.home.offset;
+            }
+            if(newTweetsCount > 0){
+              $('#newtweets-count').text(newTweetsCount);
+              $('#timeline-newtweets').slideDown(300);
+            }
+          }
+          setTimeout(updateTweetCount, 5000);
         })();
 
         // Continually run to update dates in 'from now' format
-        (function updateDates(){
+        (function updateTweetDates(){
           $('.tweet').each(function(){   
             var date = $(this).data('date');
             date = moment(date).fromNow(true);
             $(this).find('.tweet-date').text(date);
           });
-          setTimeout(updateDates, 10000);
+          setTimeout(updateTweetDates, 10000);
         })();
 
-        // Generate my home timeline
-        function generateMyTimeline(){
-          var stream = streams.home.slice(streams.home.offset);
-          displayTweets(stream, 'my-timeline');
+        // Display tweets, and filter by user in hash if present
+        function displayTweets (){
+          for(var i=streams.home.offset; i < streams.home.length; i++){
+            var tweet = streams.home[i];
+            var $tweet = $('<div class="tweet" data-user="' + tweet.user +
+             '" data-date="'+ tweet.created_at + '"></div>');
+            var friendlyDate = moment(tweet.created_at, "ddd mmm dd yyyy HH:MM:ss").fromNow(true);
+            
+            $tweet.html('<div class="tweet-top"><a class="user-link" href="#' + 
+              tweet.user + '"><div class="tweet-user">' + tweet.user + '<span>@'+ 
+              tweet.user + '</span></div></a><div class="tweet-date">' + friendlyDate + 
+              '</div></div><div class="tweet-message">' + tweet.message + '</div>');
+            $tweet.insertAfter('#timeline-newtweets');
+            streams.home.offset += 1;
+          }
+          if(location.hash){
+            filterTweetsByUser(location.hash.substr(1));
+          }
         }
         
-        // Generate timeline for a selected user
-        function generateUserTimeline(user){
-          var stream = streams.users[user];
-          streams.users[user]['offset'] = 0;
-          displayTweets(stream, 'user-timeline');
-          updateUserTweets(user, 'user-timeline');
-        }
-
-        // Continually fetch new tweets for a selected user
-        function updateUserTweets(user, timeline){
-          (function fetchUserTimelineTweets(){
-            var timeout = setTimeout(fetchUserTimelineTweets, 1000);
-            // Stop fetching when this user timeline is not shown
-            $('#back').on('click', function(){
-              clearTimeout(timeout);
-            });
-            var stream = streams.users[user].slice(streams.users[user]['offset']);
-            displayTweets(stream, timeline);
-            timeout;
-          })();
-        }
-
-        // Display tweets for my home timeline or a user timeline
-        function displayTweets (stream, timeline){
-          for(var i=0; i < stream.length; i++){
-            var tweet = stream[i];
-            var $tweet = $('<div class="tweet" data-user="'+tweet.user+'" data-date="'+tweet.created_at+'"></div>');
-            var date = moment(tweet.created_at, "ddd mmm dd yyyy HH:MM:ss").fromNow(true);
-            
-            $tweet.html('<div class="tweet-top"><a class="user-link" href="#' + tweet.user + '"><div class="tweet-user">' + tweet.user + '<span>@'+ tweet.user + '</span></div></a><div class="tweet-date">' + date + '</div></div><div class="tweet-message">' + tweet.message + '</div>');
-            
-            $tweet.prependTo('#'+timeline).hide().fadeIn( 400 );
-            
-            if(timeline === 'my-timeline'){
-              streams.home.offset += 1;
+        // Filter timeline to show tweets for a selected user
+        function filterTweetsByUser(user){
+          if(user === 'timeline'){
+            $('.tweet').show();
+          }else{
+            $('.tweet').hide();
+            $('.tweet').filter('[data-user="' + user + '"]').show();
+            if(user === visitor){
+              $('#sidebar-content h1').text('Welcome to your personal timeline, ' + user + '!')
             }else{
-              streams.users[tweet.user]['offset'] += 1;
+              $('#sidebar-content h1').text('Welcome to ' + user + ' timeline!');
+              $('#create-tweet').hide();
             }
+            $('#back-to-home').show();
           }
         }
 
-        // Show tweets for a user if user's link is clicked
+        // Show next set of tweets
+        $('#timeline-newtweets').on('click', function(){
+          $('#timeline-newtweets').slideUp(300);
+          displayTweets();
+        })
+
+        // Filter tweets for a user if user's link is clicked
         $('body').on('click', '.tweet-user', function(){
           var user = $(this).closest('.tweet').data('user');
-          $('#user-timeline-sidebar').prepend('<h1>Welcome to ' + user + ' timeline!</h1>');
-          $('#user-timeline-sidebar').show();
-          $('#user-timeline').show();
-          $('#my-timeline').hide();
-          $('#my-timeline-sidebar').hide();
-          generateUserTimeline(user);
+          $('#timeline-newtweets').hide();
+          //$('#sidebar-content h1').text('Welcome to ' + user + ' timeline!');
+          //$('#create-tweet').hide();
+          //$('#back').show();
+          filterTweetsByUser(user);
         });
 
         // Return to view of my home timeline
-        $('#back').on('click', function(){
-          $('#user-timeline').hide();
-          $('#user-timeline').find('.tweet').remove();
-          $('#user-timeline-sidebar').hide();
-          $('#user-timeline-sidebar').find('h1').remove();
-          $('#my-timeline').show();
-          $('#my-timeline-sidebar').show();
+        $('#back-to-home').on('click', function(){
+          $('#timeline-newtweets').hide();
+          $('#sidebar-content h1').text('Welcome to your home timeline!');
+          $('#create-tweet').show();
+          $('#back-to-home').hide();
+          $('.tweet').show();
+          location.hash = 'timeline';
+          displayTweets();
         });
 
         // Create a new tweet
-        $('#submit').on('click', function(){
+        $('#submit-tweet').on('click', function(){
           var message = $('#enter-tweet').val();
           writeTweet(message);
           $('#enter-tweet').val('');
+          $('#timeline-newtweets').hide();
+          displayTweets();
         });
 
       });
